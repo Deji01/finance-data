@@ -2,77 +2,75 @@ from glob import glob
 import os
 import pandas as pd
 from model import CsvData
-import psycopg2
+from sqlmodel import SQLModel, Session, create_engine
+
+import logging
+from logging.handlers import RotatingFileHandler
+
+# Create logs directory if it does not exist
+if not os.path.exists('logs'):
+    os.makedirs('logs')
+
+# Set up logging with both stream handler and file handler at INFO level
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+# Stream handler for console output
+stream_handler = logging.StreamHandler()
+stream_handler_formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+stream_handler.setFormatter(stream_handler_formatter)
+logger.addHandler(stream_handler)
+
+# File handler for output to a log file with rotation
+log_file_handler = RotatingFileHandler('logs/main.log', maxBytes=1048576, backupCount=5)
+file_handler_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+log_file_handler.setFormatter(file_handler_formatter)
+logger.addHandler(log_file_handler)
 
 def load_data():
     """
     Function to load data from a CSV file in the 'data' folder.
     Returns a pandas DataFrame object.
     """
-    if os.path.exists("data") and any(file.endswith(".csv") for file in os.listdir("data")):
-        print("CSV data found in the data folder")
+    if os.path.exists("data") and any(
+        file.endswith(".csv") for file in os.listdir("data")
+    ):
+        logger("CSV data found in the data folder")
         # read in data from path
         path = glob("data/*.csv")
     else:
-        print("No CSV data found in the data folder")
+        logger("No CSV data found in the data folder")
 
     # load data from csv
     df = pd.read_csv(path[0])
     return df
 
 
+if __name__ == "__main__":
+    csv_data = load_data()
+    logger.info("CSV data loaded successfully.")
 
-
-
-def create_connection():
-    """
-    Function to create a connection to the PostgreSQL database.
-    Returns a psycopg2 connection and cursor objects.
-    """
-    conn = psycopg2.connect(
-        dbname="your_dbname",
-        user="your_username",
-        password="your_password",
-        host="your_host",
-        port="your_port"
+    # create an engine to connect to the PostgreSQL database
+    engine = create_engine(
+        "postgresql://your_username:your_password@your_host:your_port/your_dbname"
     )
 
-    cursor = conn.cursor()
-    return conn, cursor
+    logger.info("Connected to the PostgreSQL database.")
 
-def create_table(conn, cursor):
-    """
-    Function to create a table in the PostgreSQL database.
-    """
-    create_table_query = """
-    CREATE TABLE your_table_name (
-        column1 TEXT NOT NULL,
-        column2 INTEGER NOT NULL,
-        column3 FLOAT NOT NULL
-    );
-    """
-    cursor.execute(create_table_query)
-    conn.commit()
+    SQLModel.metadata.create_all(engine)
 
-def insert_data(conn, cursor, data: pd.DataFrame):
-    """
-    Function to insert data from a pandas DataFrame into the PostgreSQL database.
-    """
-    insert_query = """
-    INSERT INTO your_table_name (column1, column2, column3)
-    VALUES (%s, %s, %s);
-    """
-    # insert data
-    for row in data.itertuples(index=False):
-        cursor.execute(insert_query, row)
-    
-    # commit changes
-    conn.commit()
-
-if  __name__ == "__main__":
-    conn, cursor = create_connection()
-    create_table(conn, cursor)
-    data = load_data()
-    insert_data(conn, cursor, data)
-    cursor.close()
-    conn.close()
+    with Session(engine) as session:
+        # load data from pandas dataframe into the database
+        for index, row in csv_data.iterrows():
+            session.add(
+                CsvData(
+                    source=row["source"],
+                    url=row["url"],
+                    content=row["content"],
+                    article=row["article"],
+                )
+            )
+            if index % 20 == 0:
+                logger.info(f"Processed {index} rows.")
+        logger.info("Data loaded successfully.")
+        session.commit()

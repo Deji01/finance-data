@@ -1,7 +1,11 @@
 # create an SQLModel class that models the CSV data
-from sqlmodel import SQLModel
+from sqlmodel import SQLModel, Field
+from typing import Optional
 
 class CsvData(SQLModel, table=True):
-    column1: str
-    column2: int
-    column3: float
+    id: Optional[int] = Field(default=None, primary_key=True)
+    source: str = Field(nullable=False)
+    url: Optional[str] = None
+    content: str
+    article: str
+

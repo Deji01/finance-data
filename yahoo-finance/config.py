@@ -1,7 +1,8 @@
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    DB_URL: str
+    SUPABASE_REST_ENDPOINT: str
+    SUPABASE_CLIENT_ANON_KEY: str
 
     class Config:
         env_file = ".env"

@@ -1,7 +1,7 @@
 from glob import glob
 import os
 import pandas as pd
-from model import CsvData, Config
+from model import CsvData, settings
 from sqlmodel import SQLModel, Session, create_engine
 
 import logging
@@ -55,10 +55,10 @@ if __name__ == "__main__":
     csv_data = load_data()
     logger.info("CSV data loaded successfully.")
 
-    # create an engine to connect to the PostgreSQL database
-    engine = create_engine(Config().POSTGRES_URL)
+    # create an engine to connect to a database
+    engine = create_engine(settings.DB_URL)
 
-    logger.info("Connected to the PostgreSQL database.")
+    logger.info("Connected to the database.")
 
     SQLModel.metadata.create_all(engine)
 

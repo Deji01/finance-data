@@ -143,12 +143,13 @@ async def main():
         df = pd.DataFrame(data)
         logger.info(f"Dataframe has {len(df)} rows before cleaning up")
         # clean up dataframe by removing empty rows
-        df = df.dropna()
-        df = df.reset_index(drop=True)
-        logger.info(f"Dataframe has {len(df)} rows after removing empty rows")
+        data = df.copy()
+        data.drop_duplicates(inplace=True)
+        logger.info(f"Dataframe had {df.shape[0]} rows before removing empty rows")
+        logger.info(f"Dataframe has {data.shape[0]} rows after removing empty rows")
         date_str = datetime.now().strftime("%Y-%m-%d")
         path = f"data/stocktitan_{date_str}.csv"
-        df.to_csv(path, index=False)
+        data.to_csv(path, index=False)
         logger.info(f"Data saved to {path}")
 
 

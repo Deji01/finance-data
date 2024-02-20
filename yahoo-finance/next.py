@@ -94,6 +94,7 @@ class ArticleScraper:
 if __name__ == "__main__":
     scraper = ArticleScraper()
     articles_df = scraper.scrape_articles()
+    articles_df["article"] = articles_df["article"].fillna("")
     date = datetime.now().strftime("%Y-%m-%d")
     if articles_df is not None:
         articles_df.to_csv(f"data/scraped_articles_{date}.csv", index=False)

@@ -7,29 +7,35 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import requests
 
-# Create logs directory if it does not exist
-if not os.path.exists('logs'):
-    os.makedirs('logs')
-
-# Set up logging with both stream handler and file handler at INFO level
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
-# Stream handler for console output
-stream_handler = logging.StreamHandler()
-stream_handler_formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-stream_handler.setFormatter(stream_handler_formatter)
-logger.addHandler(stream_handler)
-
-# File handler for output to a log file with rotation
-log_file_handler = RotatingFileHandler('logs/main.log', maxBytes=1048576, backupCount=5)
-file_handler_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-log_file_handler.setFormatter(file_handler_formatter)
-logger.addHandler(log_file_handler)
 
 class NewsScraper:
     def __init__(self, base_url: str):
         self.base_url = base_url
+        # Create logs directory if it does not exist
+        if not os.path.exists("logs"):
+            os.makedirs("logs")
+
+        # Set up logging with both stream handler and file handler at INFO level
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.INFO)
+
+        # Stream handler for console output
+        stream_handler = logging.StreamHandler()
+        stream_handler_formatter = logging.Formatter(
+            "%(asctime)s - %(levelname)s - %(message)s"
+        )
+        stream_handler.setFormatter(stream_handler_formatter)
+        self.logger.addHandler(stream_handler)
+
+        # File handler for output to a log file with rotation
+        log_file_handler = RotatingFileHandler(
+            "logs/main.log", maxBytes=1048576, backupCount=5
+        )
+        file_handler_formatter = logging.Formatter(
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        )
+        log_file_handler.setFormatter(file_handler_formatter)
+        self.logger.addHandler(log_file_handler)
 
     def get_page(self, url: str) -> BeautifulSoup:
         """
@@ -41,12 +47,12 @@ class NewsScraper:
         Returns:
             BeautifulSoup: The parsed HTML content of the webpage.
         """
-        logger.info(f"Downloading webpage: {url}")
+        self.logger.info(f"Downloading webpage: {url}")
         # make a request to the url and wait for page to load completely
         response = requests.get(url, timeout=30)
 
         if not response.ok:
-            logger.error(
+            self.logger.error(
                 f"Failed to load {url} with status code {response.status_code}\n"
             )
             raise Exception(
@@ -66,7 +72,7 @@ class NewsScraper:
         Returns:
             list: A list of news tags extracted from the page.
         """
-        logger.info("Extracting news tags from page")
+        self.logger.info("Extracting news tags from page")
 
         return soup.find_all("div", {"class": "Ov(h) Pend(44px) Pstart(25px)"})
 
@@ -103,18 +109,18 @@ class NewsScraper:
 
         full_url = self.base_url + "/topic/stock-market-news/"
 
-        logger.info(f"Starting news scraping for URL: {full_url}")
+        self.logger.info(f"Starting news scraping for URL: {full_url}")
 
         doc = self.get_page(url=full_url)
         div_tags = self.get_news_tags(soup=doc)
 
         news = [self.parse_news(div) for div in div_tags]
-        logger.info(f"{len(news)} news extracted")
+        self.logger.info(f"{len(news)} news extracted")
 
         df = pd.DataFrame(news)
         df.to_csv(path, index=False)
 
-        logger.info(f"News data saved to {path}")
+        self.logger.info(f"News data saved to {path}")
 
         return df
 

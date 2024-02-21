@@ -48,14 +48,16 @@ jobs:
       working-directory: ./stock-titan
       env:
         DB_URL: ${{ secrets.DB_URL }}
-      run: make all
+      run: |
+        export DB_URL=${{ secrets.DB_URL }} && make all
       
 
     - name: Run yahoo-finance
       working-directory: ./yahoo-finance
       env:
         DB_URL: ${{ secrets.DB_URL }}
-      run: make all
+      run: |
+        export DB_URL=${{ env.DB_URL }} && make all
 
     - name: Commit and push changes
       run: |

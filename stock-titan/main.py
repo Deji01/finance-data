@@ -136,7 +136,7 @@ async def main():
                     data,
                 )
             )
-            for i in range(1)
+            for i in range(2)
         ]
         await asyncio.gather(*tasks)
 

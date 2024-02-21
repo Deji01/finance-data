@@ -7,7 +7,9 @@ import os
 
 import pandas as pd
 from sqlalchemy import create_engine
+from dotenv import load_dotenv
 
+load_dotenv()
 # Create logs directory if it does not exist
 if not os.path.exists("logs"):
     os.makedirs("logs")
@@ -73,7 +75,7 @@ if __name__ == "__main__":
     logger.info("CSV data loaded successfully.")
 
     # create an engine to connect to a database
-    engine = create_engine(settings.DB_URL)
+    engine = create_engine(os.environ.get("DB_URL") or settings.DB_URL)
     conn = engine.connect()
     logger.info("Connected to the database.")
 

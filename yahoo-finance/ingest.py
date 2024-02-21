@@ -1,5 +1,3 @@
-from config import settings
-
 from glob import glob
 import logging
 from logging.handlers import RotatingFileHandler
@@ -76,7 +74,7 @@ if __name__ == "__main__":
     logger.info("CSV data loaded successfully.")
 
     # create an engine to connect to a database
-    engine = create_engine(os.environ.get("DB_URL") or settings.DB_URL)
+    engine = create_engine(os.environ.get("DB_URL"))
     conn = engine.connect()
     logger.info("Connected to the database.")
 

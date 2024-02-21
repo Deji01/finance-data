@@ -10,7 +10,7 @@ on:
     - cron: "0 20 * * *"  # Run at 8:00 PM UTC (yahoo-finance)
     
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:

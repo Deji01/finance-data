@@ -48,7 +48,7 @@ jobs:
       env:
         DB_URL: ${{ secrets.DB_URL }}
       run: |
-        export DB_URL=${{ secrets.DB_URL }} && make all
+        export DB_URL=${{ env.DB_URL }} && make all
       
     - name: Run yahoo-finance
       working-directory: ./yahoo-finance

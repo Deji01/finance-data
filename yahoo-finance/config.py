@@ -1,12 +1,18 @@
 from pydantic_settings import BaseSettings
 
+
 class Settings(BaseSettings):
-    SUPABASE_REST_ENDPOINT: str
-    SUPABASE_CLIENT_ANON_KEY: str
+    DB_HOST: str
+    DB_NAME: str
+    DB_USER: str
+    DB_PASSWORD: str
+    DB_PORT: str
+    DB_URL: str
 
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
+
 
 # Instantiate settings
 settings = Settings()

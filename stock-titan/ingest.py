@@ -77,7 +77,7 @@ if __name__ == "__main__":
     conn = engine.connect()
     logger.info("Connected to the database.")
 
-    df.to_sql("yahoo-finance", con=conn, if_exists="append", index=False)
+    df.to_sql("stock-titan", con=conn, if_exists="append", index=False)
 
     conn.autocommit = True
     logger.info("Data loaded successfully.")

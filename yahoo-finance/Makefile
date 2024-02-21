@@ -1,3 +1,5 @@
+dirs:
+	@mkdir -p data archive logs
 main: 
 	@python3 main.py
 next: 
@@ -5,6 +7,7 @@ next:
 ingest: 
 	@python3 ingest.py
 all:
+	make dirs
 	make main
 	make next
 	make ingest

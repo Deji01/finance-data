@@ -43,20 +43,20 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-        
-    - name: Run stock-titan
-      working-directory: ./stock-titan
+    - name: Set ENV
       env:
-        DB_URL: ${{ secrets.DB_URL }}
+          DB_URL: ${{ secrets.DB_URL }}
+      run: |
+        export DB_URL=${{ secrets.DB_URL }}
+      
+    - name: Run stock-titan
+      working-directory: ./stock-titan      
       run: make all
       
-
     - name: Run yahoo-finance
       working-directory: ./yahoo-finance
-      env:
-        DB_URL: ${{ secrets.DB_URL }}
       run: make all
-
+          
     - name: Commit and push changes
       run: |
         git config --global user.email "ayodejiyou@gmail.com"

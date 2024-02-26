@@ -137,7 +137,8 @@ class StockTitanLoader:
         )
 
         ts_vector_store.add(nodes)
-        ts_vector_store.create_index()
+        # index already exists
+        # ts_vector_store.create_index()
 
     def run(self):
         """

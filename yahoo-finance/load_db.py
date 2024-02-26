@@ -83,18 +83,19 @@ if __name__ == "__main__":
     conn.autocommit = True
     logger.info("Data loaded successfully.")
 
-    query = '''
-        DELETE FROM "yahoo-finance"
-        WHERE id IN (
-            SELECT id
-            FROM (
-                SELECT id,
-                    ROW_NUMBER() OVER (PARTITION BY source, title, url, content, article, created_at ORDER BY id) AS row_num
-                FROM "yahoo-finance"
-            ) AS subquery
-            WHERE subquery.row_num > 1
-            );
-    '''
+    query = \
+'''
+DELETE FROM "yahoo-finance"
+WHERE id IN (
+    SELECT id
+    FROM (
+        SELECT id,
+            ROW_NUMBER() OVER (PARTITION BY source, title, url, content, article, created_at ORDER BY id) AS row_num
+        FROM "yahoo-finance"
+    ) AS subquery
+    WHERE subquery.row_num > 1
+);
+'''
     result = conn.execute(text(query))
     logger.info(f"Deleted {result.rowcount} duplicate rows.")
     conn.close()

@@ -4,7 +4,7 @@ from logging.handlers import RotatingFileHandler
 import os
 
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -26,7 +26,7 @@ stream_handler.setFormatter(stream_handler_formatter)
 logger.addHandler(stream_handler)
 
 # File handler for output to a log file with rotation
-log_file_handler = RotatingFileHandler("logs/main.log", maxBytes=1048576, backupCount=5)
+log_file_handler = RotatingFileHandler("logs/load_database.log", maxBytes=1048576, backupCount=5)
 file_handler_formatter = logging.Formatter(
     "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
@@ -82,6 +82,21 @@ if __name__ == "__main__":
 
     conn.autocommit = True
     logger.info("Data loaded successfully.")
+
+    query = '''
+        DELETE FROM "yahoo-finance"
+        WHERE id IN (
+            SELECT id
+            FROM (
+                SELECT id,
+                    ROW_NUMBER() OVER (PARTITION BY source, title, url, content, article, created_at ORDER BY id) AS row_num
+                FROM "yahoo-finance"
+            ) AS subquery
+            WHERE subquery.row_num > 1
+            );
+    '''
+    result = conn.execute(text(query))
+    logger.info(f"Deleted {result.rowcount} duplicate rows.")
     conn.close()
     logger.info("Connection closed.")
     create_archive()

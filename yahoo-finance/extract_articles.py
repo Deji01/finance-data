@@ -31,7 +31,7 @@ class ArticleScraper:
 
         # File handler for output to a log file with rotation
         log_file_handler = RotatingFileHandler(
-            "logs/next.log", maxBytes=1048576, backupCount=5
+            "logs/extract_articles.log", maxBytes=1048576, backupCount=5
         )
         file_handler_formatter = logging.Formatter(
             "%(asctime)s - %(name)s - %(levelname)s - %(message)s"

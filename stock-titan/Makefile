@@ -1,10 +1,13 @@
 dirs:
 	@mkdir -p data archive logs
-main: 
-	@python3 main.py
-ingest: 
-	@python3 ingest.py
+extract: 
+	@python3 extract.py
+load_db: 
+	@python3 load_db.py
+load_vs: 
+	@python3 load_vs.py
 all:
 	make dirs
-	make main
-	make ingest
+	make extract
+	make load_db
+	make load_vs

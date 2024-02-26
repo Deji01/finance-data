@@ -25,7 +25,7 @@ stream_handler.setFormatter(stream_handler_formatter)
 logger.addHandler(stream_handler)
 
 # File handler for output to a log file with rotation
-log_file_handler = RotatingFileHandler('logs/main.log', maxBytes=1048576, backupCount=5)
+log_file_handler = RotatingFileHandler('logs/extract.log', maxBytes=1048576, backupCount=5)
 file_handler_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 log_file_handler.setFormatter(file_handler_formatter)
 logger.addHandler(log_file_handler)

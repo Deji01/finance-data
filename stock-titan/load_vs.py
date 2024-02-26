@@ -14,7 +14,7 @@ import pandas as pd
 from sqlalchemy import create_engine, text
 
 
-class YahooFinanceLoader:
+class StockTitanLoader:
     def __init__(self):
         """
         Initialize the class by loading environment variables, setting up API keys, initializing settings, and setting up logging.
@@ -137,7 +137,8 @@ class YahooFinanceLoader:
         )
 
         ts_vector_store.add(nodes)
-        ts_vector_store.create_index()
+        # index already exists
+        # ts_vector_store.create_index()
 
     def run(self):
         """
@@ -153,5 +154,5 @@ class YahooFinanceLoader:
 
 
 if __name__ == "__main__":
-    loader = YahooFinanceLoader()
+    loader = StockTitanLoader()
     loader.run()

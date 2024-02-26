@@ -84,7 +84,8 @@ if __name__ == "__main__":
     conn.autocommit = True
     logger.info("Data loaded successfully.")
 
-    query = '''
+    query = \
+'''
 DELETE FROM "stock-titan"
 WHERE id IN (
     SELECT id
